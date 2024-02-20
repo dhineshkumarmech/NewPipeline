@@ -19,7 +19,7 @@ pipeline {
                         docker pull tomcat:latest
                         docker rm -f tomcat_container || true
                         docker run -d --name tomcat_container -p 8080:8080 tomcat:latest
-                        docker cp target/MavenWebProject.war tomcat_container:/usr/local/tomcat/webapps/ROOT.war
+                        docker cp target/MavenWebPipeline.war tomcat_container:/usr/local/tomcat/webapps/ROOT.war
                     '''
                 }
             }
