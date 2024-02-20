@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'MAVEN_HOME'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    bat 'mvn clean package'
+                }
+            }
+        }
+		stage('Build Docker Image') {
+            steps {
+                script {
+                    bat '''
+                        docker pull tomcat:latest
+                        docker rm -f tomcat_container || true
+                        docker run -d --name tomcat_container -p 8080:8080 tomcat:latest
+                        docker cp target/MavenWebProject.war tomcat_container:/usr/local/tomcat/webapps/ROOT.war
+                    '''
+                }
+            }
+        }
+        
+        stage('Deploy to Tomcat') {
+            steps {
+                script {
+                    bat '''
+                        docker exec -d tomcat_container /usr/local/tomcat/bin/catalina.sh start
+                    '''
+                }
+            }
+        }
+	}
